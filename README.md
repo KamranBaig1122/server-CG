@@ -199,10 +199,33 @@ Get a new JWT token using existing token.
 
 ---
 
-### 3. Delete User
+### 3. Get User Profile
+**GET** `/api/users/profile/:id`
+
+**Access:** Private (Admin or the same user)
+
+**Response (200 OK):**
+```json
+{
+  "_id": "507f1f77bcf86cd799439011",
+  "name": "John Doe",
+  "email": "john@example.com",
+  "role": "supervisor",
+  "assignedLocations": ["507f1f77bcf86cd799439012"],
+  "notifications": {
+    "email": true,
+    "push": true
+  },
+  "fcmToken": "sample-device-token"
+}
+```
+
+---
+
+### 4. Delete User
 **DELETE** `/api/users/:id`
 
-**Access:** Private, Admin Only
+**Access:** Private (Admin or the same user)
 
 **Response (200 OK):**
 ```json

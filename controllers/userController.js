@@ -227,11 +227,41 @@ const updateUser = async (req, res) => {
     }
 };
 
+// @desc    Get specific user profile
+// @route   GET /api/users/profile/:id
+// @access  Private (Admin or the user themself)
+const getUserProfile = async (req, res) => {
+    const userId = req.params.id;
+    const isAdmin = req.user.role === 'admin';
+    const isSelf = req.user._id.toString() === userId;
+
+    if (!isAdmin && !isSelf) {
+        return res.status(403).json({ message: 'Not authorized to view this profile' });
+    }
+
+    const user = await User.findById(userId).select('-password');
+
+    if (!user) {
+        res.status(404);
+        throw new Error('User not found');
+    }
+
+    res.json(user);
+};
+
 // @desc    Delete user
 // @route   DELETE /api/users/:id
-// @access  Private/Admin
+// @access  Private (Admin or the user themself)
 const deleteUser = async (req, res) => {
-    const user = await User.findById(req.params.id);
+    const userId = req.params.id;
+    const isAdmin = req.user.role === 'admin';
+    const isSelf = req.user._id.toString() === userId;
+
+    if (!isAdmin && !isSelf) {
+        return res.status(403).json({ message: 'Not authorized to delete this account' });
+    }
+
+    const user = await User.findById(userId);
 
     if (user) {
         await user.deleteOne();
@@ -242,4 +272,4 @@ const deleteUser = async (req, res) => {
     }
 };
 
-module.exports = { authUser, registerUser, logoutUser, refreshToken, getUsers, updateUser, deleteUser };
+module.exports = { authUser, registerUser, logoutUser, refreshToken, getUsers, getUserProfile, updateUser, deleteUser };
